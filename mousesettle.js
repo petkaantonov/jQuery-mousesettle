@@ -96,10 +96,9 @@ Based on http://cherne.net/brian/resources/jquery.hoverIntent.js
                 
         },
         
-        mousemove: function(ev) {
-            var e = ev || window.event;
-            this.cur.x = e.screenX;
-            this.cur.y = e.screenY;
+        mousemove: function(e) {
+            this.cur.x = e.pageX;
+            this.cur.y = e.pageY;
         },
         
         destroy: function() {
