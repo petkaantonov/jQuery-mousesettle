@@ -137,8 +137,7 @@ Based on http://cherne.net/brian/resources/jquery.hoverIntent.js
             
             add: function( obj ) {
                 obj.settleHandler = handles[complex](obj.handler);
-                obj.data = obj.data || {};
-                obj.data.MouseSettle = {};
+
                 if( obj.selector ) {
                     $( this ).delegate( obj.selector, simple+".mousesettle", obj.data, obj.settleHandler );
                 }
@@ -154,20 +153,19 @@ Based on http://cherne.net/brian/resources/jquery.hoverIntent.js
     var handles = {
         mousesettle: function(handler) {
             return function(event) {
-                event.data.MouseSettle.instance = new MouseSettle( this, event, handler ).bind();
+                $(this).data( "mouseSettleInstance", new MouseSettle( this, event, handler ).bind() );
             };
         },
         
         mouseunsettle: function(handler) {
             return function(event) {
-                var instance = event.data.MouseSettle.instance;
+                var instance = $(this).data( "mouseSettleInstance" );
                 if( instance && ( instance = Object( instance ) ) && instance instanceof MouseSettle ) {
                     instance.destroy();
                     if( instance.isSettled ) {
                         event.type = "mouseunsettle";
                         handler.call( this, event );
                     }
-                    event.data.MouseSettle.instance = null;
                 }
 
             };
