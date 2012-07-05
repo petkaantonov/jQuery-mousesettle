@@ -87,6 +87,7 @@ Based on http://cherne.net/brian/resources/jquery.hoverIntent.js
             var event = this.event;                
             event.type = "mousesettle";
             this.handler.call( this.elem, event );
+            
                 
         },
         
@@ -109,11 +110,7 @@ Based on http://cherne.net/brian/resources/jquery.hoverIntent.js
         constructor: MouseSettle
     };
     
-    $.each({mousesettle: "mouseenter",
-     mouseunsettle: "mouseleave"}, function( complex, simple ) {
-
-        jQuery.event.special[complex] = {
-
+    jQuery.event.special.mousesettle = {
             setup: function( data ) {
                 return true;
             },
@@ -123,54 +120,46 @@ Based on http://cherne.net/brian/resources/jquery.hoverIntent.js
             },
             
             remove: function( obj ) {
-                if( !obj.settleHandler ) {
+                if( !obj.mouseSettleHandler ) {
                     return;
                 }
                 if( obj.selector ) {
-                    $( this ).undelegate( obj.selector, simple+".mousesettle", obj.settleHandler );
+                    $( this ).undelegate( obj.selector, "mouseenter mouseleave", obj.mouseSettleHandler );
                 }
                 else {
-                    $( this ).unbind( simple+".mousesettle", obj.settleHandler );
+                    $( this ).unbind( "mouseenter mouseleave", obj.mouseSettleHandler );
                 }
                 
             },
             
             add: function( obj ) {
-                obj.settleHandler = handles[complex](obj.handler);
+                obj.mouseSettleHandler = makeMouseSettleHandler(obj.handler);
 
                 if( obj.selector ) {
-                    $( this ).delegate( obj.selector, simple+".mousesettle", obj.data, obj.settleHandler );
+                    $( this ).delegate( obj.selector, "mouseenter mouseleave", obj.data, obj.mouseSettleHandler );
                 }
                 else {
-                    $( this ).bind( simple+".mousesettle", obj.data, obj.settleHandler  );
+                    $( this ).bind( "mouseenter mouseleave", obj.data, obj.mouseSettleHandler  );
                 }
-               
+            }
+                   
+    };
+    
+    function makeMouseSettleHandler( handler ) {
+        var instance;
+        return function( event ) {
+            if( event.type === "mouseenter" ) {
+                instance = new MouseSettle( this, event, handler );
+                instance.bind();
+            }
+            else {
+                if( instance ) {
+                    instance.destroy();
+                    instance = null;
+                }
+                $(this).trigger( "mouseunsettle" );
             }
         };
-    
-    });
-    
-    var handles = {
-        mousesettle: function(handler) {
-            return function(event) {
-                $(this).data( "mouseSettleInstance", new MouseSettle( this, event, handler ).bind() );
-            };
-        },
-        
-        mouseunsettle: function(handler) {
-            return function(event) {
-                var instance = $(this).data( "mouseSettleInstance" );
-                if( instance && ( instance = Object( instance ) ) && instance instanceof MouseSettle ) {
-                    instance.destroy();
-                    if( instance.isSettled ) {
-                        event.type = "mouseunsettle";
-                        handler.call( this, event );
-                    }
-                }
-
-            };
-            
-        }
     }
 
 }(this, this.Math, this.jQuery));
