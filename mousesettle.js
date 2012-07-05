@@ -34,21 +34,15 @@ Based on http://cherne.net/brian/resources/jquery.hoverIntent.js
         this.elem = elem;
         this.event = event;
         this.handler = handler;
-        
         this.mousemove = $.proxy( this.mousemove, this );
         this.poller = $.proxy( this.poller, this );
         this.settled = $.proxy( this.settled, this );
-        
         this.throttleId = window.setTimeout( this.settled, MouseSettle.settlingTimeout );
         this.pollerId = window.setInterval( this.poller, 20 );
-        
-        $( elem ).bind( "mousemove.mousesettle", this.mousemove );
-        
         this.cur = {};
         this.prev = {};
         this.lastPoll = +new Date;
         this.isSettled = false;
-        
     }
 
     MouseSettle.prototype = {
@@ -96,6 +90,11 @@ Based on http://cherne.net/brian/resources/jquery.hoverIntent.js
                 
         },
         
+        bind: function() {
+            $( this.elem ).on( "mousemove.mousesettle", this.mousemove );
+             return this;
+        },
+        
         mousemove: function(e) {
             this.cur.x = e.pageX;
             this.cur.y = e.pageY;
@@ -104,9 +103,7 @@ Based on http://cherne.net/brian/resources/jquery.hoverIntent.js
         destroy: function() {
             window.clearInterval( this.pollerId );
             window.clearTimeout( this.throttleId );
-
-            $( this.elem ).unbind( "mousemove.mousesettle" );
-            $( this.elem ).removeData( "mouseSettleInstance" );
+            $( this.elem ).off( "mousemove.mousesettle" ).removeData( "mouseSettleInstance" );
         },
 
         constructor: MouseSettle
@@ -140,8 +137,9 @@ Based on http://cherne.net/brian/resources/jquery.hoverIntent.js
             
             add: function( obj ) {
                 obj.settleHandler = handles[complex](obj.handler);
+                obj.data = obj.data || {};
+                obj.data.MouseSettle = {};
                 if( obj.selector ) {
-                    
                     $( this ).delegate( obj.selector, simple+".mousesettle", obj.data, obj.settleHandler );
                 }
                 else {
@@ -156,19 +154,20 @@ Based on http://cherne.net/brian/resources/jquery.hoverIntent.js
     var handles = {
         mousesettle: function(handler) {
             return function(event) {
-                $( this ).data( "mouseSettleInstance", new MouseSettle( this, event, handler ) );
+                event.data.MouseSettle.instance = new MouseSettle( this, event, handler ).bind();
             };
         },
         
         mouseunsettle: function(handler) {
             return function(event) {
-                var instance = $( this ).data( "mouseSettleInstance" );
+                var instance = event.data.MouseSettle.instance;
                 if( instance && ( instance = Object( instance ) ) && instance instanceof MouseSettle ) {
                     instance.destroy();
                     if( instance.isSettled ) {
                         event.type = "mouseunsettle";
                         handler.call( this, event );
                     }
+                    event.data.MouseSettle.instance = null;
                 }
 
             };
@@ -177,6 +176,3 @@ Based on http://cherne.net/brian/resources/jquery.hoverIntent.js
     }
 
 }(this, this.Math, this.jQuery));
-
-
-
