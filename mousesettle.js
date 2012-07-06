@@ -123,26 +123,13 @@ Based on http://cherne.net/brian/resources/jquery.hoverIntent.js
                 if( !obj.mouseSettleHandler ) {
                     return;
                 }
-                if( obj.selector ) {
-                    $( this ).undelegate( obj.selector, "mouseenter mouseleave", obj.mouseSettleHandler );
-                }
-                else {
-                    $( this ).unbind( "mouseenter mouseleave", obj.mouseSettleHandler );
-                }
+                $( this ).off( "mouseenter mouseleave", obj.selector || null,  obj.mouseSettleHandler );
                 
             },
             
             add: function( obj ) {
                 obj.mouseSettleHandler = makeMouseSettleHandler(obj.handler);
-
-                if( obj.selector ) {
-                    $( this ).delegate( obj.selector, "mouseenter mouseleave", obj.data, obj.mouseSettleHandler );
-                }
-                else {
-                    $( this ).bind( "mouseenter mouseleave", obj.data, obj.mouseSettleHandler  );
-                }
-            }
-                   
+                $( this ).on( "mouseenter mouseleave", obj.selector || null,  obj.mouseSettleHandler );           
     };
     
     function makeMouseSettleHandler( handler ) {
