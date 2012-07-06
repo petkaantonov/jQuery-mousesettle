@@ -110,7 +110,7 @@ Based on http://cherne.net/brian/resources/jquery.hoverIntent.js
         constructor: MouseSettle
     };
     
-    jQuery.event.special.mousesettle = {
+    $.event.special.mousesettle = {
             setup: function( data ) {
                 return true;
             },
