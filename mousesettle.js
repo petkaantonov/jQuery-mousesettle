@@ -129,7 +129,8 @@ Based on http://cherne.net/brian/resources/jquery.hoverIntent.js
             
             add: function( obj ) {
                 obj.mouseSettleHandler = makeMouseSettleHandler(obj.handler);
-                $( this ).on( "mouseenter mouseleave", obj.selector || null,  obj.mouseSettleHandler );           
+                $( this ).on( "mouseenter mouseleave", obj.selector || null,  obj.mouseSettleHandler );
+            }
     };
     
     function makeMouseSettleHandler( handler ) {
