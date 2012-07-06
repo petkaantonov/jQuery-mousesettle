@@ -148,5 +148,20 @@ Based on http://cherne.net/brian/resources/jquery.hoverIntent.js
             }
         };
     }
+    
+    $.each( ["mousesettle", "mouseunsettle"], function( i, name ) {
+
+        $.fn[ name ] = function( data, fn ) {
+            if ( fn == null ) {
+                fn = data;
+                data = null;
+            }
+
+            return arguments.length > 0 ?
+                this.on( name, null, data, fn ) :
+                this.trigger( name );
+        };    
+    
+    });
 
 }(this, this.Math, this.jQuery));
