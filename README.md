@@ -27,14 +27,16 @@ Delegate with different handlers:
 		}
 	}, ".niceclass" );
 	
-Config:
+###Config###
 
-    $.MouseSettle.settlingTimeout = 650;
+    $.MouseSettle.settlingTimeout = 650; 
+      
+ The mouse needs to be still or sufficiently slowed down this amount of milliseconds on the element for it to be considered
+ settled.
+ 
     $.MouseSettle.speedThreshold = 150;
 
-I don't remember what those values do but they basically control what is being interpreted as hover intention.
+Mouse moving slower than this speed is considered sufficiently slowed down.
 
-[Demo](http://jsfiddle.net/uH3kM/)
-
-More documentation and tests coming soon.... yeah right.
+[Demo](http://jsfiddle.net/9RfMx/1/)
 
